@@ -55,6 +55,7 @@
 
 - `build_openreview_index.py`：构建或续跑本地索引
 - `query_openreview.py`：基于本地索引执行离线查询
+- `download_pdfs.py`：从筛选后的 `.csv` 或 `.jsonl` 结果文件下载 PDF
 - `test_query_openreview.py`：单元测试
 
 ## 运行要求
@@ -175,6 +176,90 @@ python openreview_local_index/build_openreview_index.py --no-resume
 3. 检查导出的 `csv/jsonl`。
 4. 根据需要继续做第二阶段过滤。
 5. 最后只为最终子集下载 PDF。
+
+## 从筛选结果下载 PDF
+
+当你已经有筛选后的结果文件时，可以把 PDF 下载到一个单层平铺目录里。
+
+下载器适合放在整个工作流的最后一步：
+
+1. 先构建本地元数据索引
+2. 再执行离线查询
+3. 如有需要，再做第二轮筛选
+4. 最后只为筛选后的结果下载 PDF
+
+支持的输入格式：
+
+- `.csv`
+- `.jsonl`
+
+每条记录至少需要这些字段：
+
+- `title`
+- `year`
+- `venue`
+- `note_id`
+- `pdf_url` 或 `note_id`
+
+如果记录里没有 `pdf_url`，下载器会根据 `note_id` 自动拼出 OpenReview 的 PDF 链接。
+
+下面是一个基于筛选后 CSV 的下载示例：
+
+PowerShell：
+
+```powershell
+python openreview_local_index/download_pdfs.py --input openreview_local_index/outputs/local_index_graph_gc_gd_5y.csv --outdir openreview_local_index/downloads
+```
+
+Bash：
+
+```bash
+python openreview_local_index/download_pdfs.py --input openreview_local_index/outputs/local_index_graph_gc_gd_5y.jsonl --outdir openreview_local_index/downloads
+```
+
+默认行为：
+
+- 所有 PDF 直接下载到同一层目录
+- 如果目标文件已存在，则默认跳过
+- 会在下载目录中额外生成一份下载报告
+
+文件命名规则：
+
+```text
+title__year__venue__note_id.pdf
+```
+
+例如：
+
+```text
+Bonsai_ Gradient-free Graph Condensation for Node Classification__2025__ICLR__5x88lQ2MsH.pdf
+```
+
+如果你希望覆盖已有文件：
+
+```bash
+python openreview_local_index/download_pdfs.py --input openreview_local_index/outputs/results.csv --outdir openreview_local_index/downloads --overwrite
+```
+
+如果你想先小规模试跑几条：
+
+```bash
+python openreview_local_index/download_pdfs.py --input openreview_local_index/outputs/results.csv --outdir openreview_local_index/downloads --limit 5
+```
+
+每次下载后都会额外生成一份报告文件：
+
+```text
+<input_stem>_download_report.json
+```
+
+报告中会包含：
+
+- 本次处理的总记录数
+- 成功下载数
+- 跳过数
+- 失败数
+- 每个文件的状态和错误信息
 
 ## 示例命令
 

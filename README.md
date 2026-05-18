@@ -55,6 +55,7 @@ Important:
 
 - `build_openreview_index.py`: build or resume the local index
 - `query_openreview.py`: run offline queries against a local index
+- `download_pdfs.py`: download PDFs from filtered `.csv` or `.jsonl` result files
 - `test_query_openreview.py`: unit tests
 
 ## Requirements
@@ -175,6 +176,90 @@ This is intentionally simple and transparent. It is not embedding search or sema
 3. Review the `csv/jsonl` result set.
 4. Apply second-stage filtering manually or with another script.
 5. Download PDFs only for the final subset if needed.
+
+## Download PDFs from Filtered Results
+
+Once you have a filtered result file, you can download PDFs into a single flat directory.
+
+The downloader is intended for the final stage of the workflow:
+
+1. build a local metadata index
+2. run offline queries
+3. optionally do a second round of filtering
+4. download PDFs for the filtered subset
+
+Supported input formats:
+
+- `.csv`
+- `.jsonl`
+
+Required record fields:
+
+- `title`
+- `year`
+- `venue`
+- `note_id`
+- `pdf_url` or `note_id`
+
+If `pdf_url` is missing, the downloader reconstructs it from `note_id`.
+
+Example using a filtered CSV:
+
+PowerShell:
+
+```powershell
+python openreview_local_index/download_pdfs.py --input openreview_local_index/outputs/local_index_graph_gc_gd_5y.csv --outdir openreview_local_index/downloads
+```
+
+Bash:
+
+```bash
+python openreview_local_index/download_pdfs.py --input openreview_local_index/outputs/local_index_graph_gc_gd_5y.jsonl --outdir openreview_local_index/downloads
+```
+
+By default:
+
+- PDFs are placed directly in one flat directory
+- existing files are skipped
+- a download report is written alongside the PDFs
+
+Filename format:
+
+```text
+title__year__venue__note_id.pdf
+```
+
+Example:
+
+```text
+Bonsai_ Gradient-free Graph Condensation for Node Classification__2025__ICLR__5x88lQ2MsH.pdf
+```
+
+If you want to overwrite existing files:
+
+```bash
+python openreview_local_index/download_pdfs.py --input openreview_local_index/outputs/results.csv --outdir openreview_local_index/downloads --overwrite
+```
+
+If you only want to test a few records first:
+
+```bash
+python openreview_local_index/download_pdfs.py --input openreview_local_index/outputs/results.csv --outdir openreview_local_index/downloads --limit 5
+```
+
+Each download run writes a report file:
+
+```text
+<input_stem>_download_report.json
+```
+
+The report includes:
+
+- total records considered
+- downloaded count
+- skipped count
+- failed count
+- per-file status and error details
 
 ## Example Commands
 
