@@ -106,19 +106,7 @@ For example, if today is `2026-05-19`, the default range is:
 Single query in PowerShell:
 
 ```powershell
-python query_openreview.py --queries '["graph condensation"]'
-```
-
-Multiple queries in PowerShell:
-
-```powershell
-python query_openreview.py --queries '["graph condensation", "graph distillation", "condensed graph"]'
-```
-
-Bash:
-
-```bash
-python query_openreview.py --queries "[\"graph condensation\", \"graph distillation\"]"
+python query_openreview.py --queries "graph condensation"
 ```
 
 Legacy repeated flags are also supported:
