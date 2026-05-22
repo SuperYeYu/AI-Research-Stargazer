@@ -108,7 +108,7 @@ python build_openreview_index.py
 PowerShell，单个 query：
 
 ```powershell
-python query_openreview.py --queries "graph condensation"
+python query_openreview.py --query "graph condensation"
 ```
 
 Bash：
