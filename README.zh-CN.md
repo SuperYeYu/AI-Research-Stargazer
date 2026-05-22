@@ -108,20 +108,10 @@ python build_openreview_index.py
 PowerShell，单个 query：
 
 ```powershell
-python query_openreview.py --queries '["graph condensation"]'
-```
-
-PowerShell，多个 query：
-
-```powershell
-python query_openreview.py --queries '["graph condensation", "graph distillation", "condensed graph"]'
+python query_openreview.py --queries "graph condensation"
 ```
 
 Bash：
-
-```bash
-python query_openreview.py --queries "[\"graph condensation\", \"graph distillation\"]"
-```
 
 也兼容旧的重复参数写法：
 
